@@ -6,7 +6,7 @@ from gensim.utils import simple_preprocess
 
 LENGTH_TRAINING = 80
 TESTING_PERSENTATGE = 0.10
-num_features = 100
+num_features = 30
 
 
 def get_data_file():
