@@ -19,7 +19,7 @@ nc_layer10 = 1000
 batch_size = 100
 x = tf.placeholder('float', [None, input_size],name='x')
 y = tf.placeholder('float', [None, n_classes], name='y')
-num_epochs = 65
+num_epochs = 7
 
 
 def neural_network_model(data):
@@ -66,7 +66,7 @@ def neural_network_model(data):
 	l10 = tf.nn.relu(l10)
 
 	fc = tf.add(tf.matmul(l10,  fc_layer1['weights']), fc_layer1['biases'],name='fc')
-
+	YYY = tf.nn.softmax(fc, name='Y1')
 	return fc
 
 
@@ -79,14 +79,13 @@ def next_batch(idx, xtrain,ytrian):
 
 
 
-def train_NN(x,xtrain,ytrain,xtest,ytest,y):
+def train_NN(x,xtrain,ytrain,xval, yval,xtest,ytest,y):
 	prediction = neural_network_model(x)
 	cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=prediction,labels=y), name='cost')
 	# learning rate = 0.0001
-	optimizer = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost)
+	optimizer = tf.train.AdamOptimizer(learning_rate=0.0001,name='optimizer').minimize(cost)
 	saver = tf.train.Saver()
 
-	
 
 	with tf.Session() as sess:
 		sess.run(tf.initialize_all_variables())
@@ -106,7 +105,8 @@ def train_NN(x,xtrain,ytrain,xtest,ytest,y):
 
 			correct = tf.equal(tf.argmax(prediction,1), tf.argmax(y,1))
 			accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-			print('Accuracy:{}'.format(accuracy.eval({x:xtest,y:ytest})))
+			print('Val Accuracy:{}'.format(accuracy.eval({x:xval,y:yval})))
+		print('TEST Accuracy:{}'.format(accuracy.eval({x: xtest, y: ytest})))
 		sp = saver.save(sess, "w2vnn/result.ckpt")
 
 def main():
@@ -114,7 +114,9 @@ def main():
 	ytrain = list(np.load('ytrain.npy'))
 	xtest = list(np.load('xtest.npy'))
 	ytest = list(np.load('ytest.npy'))
-	train_NN(x, xtrain, ytrain, xtest, ytest,y)
+	xval = list(np.load('xval.npy'))
+	yval = list(np.load('yval.npy'))
+	train_NN(x, xtrain, ytrain, xval, yval, xtest, ytest,y)
 if __name__ == '__main__':
 	main()
 

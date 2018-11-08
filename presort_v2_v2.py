@@ -3,12 +3,12 @@ import numpy as np
 import random
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess
-FEATURE_NUM = 100
+FEATURE_NUM = 30
 
 
 LENGTH_TRAINING = 80
 TESTING_PERSENTATGE = 0.10
-
+VAL_PERSENTAGE = 0.20
 
 def get_data_file():
 	useful_list = [0,1,2,3,4,5]
@@ -78,29 +78,35 @@ def main():
 		massive_np_y.pop(i)
 	max_length = len(massive_mp_x)
 	test_length = int(max_length*TESTING_PERSENTATGE)
-	temp = 0
-	for i in massive_mp_x:
-		if i.shape[0] > temp:
-			temp = i.shape[0]
+	val_length = int(max_length*VAL_PERSENTAGE)
+	temp = 30
+	# for i in massive_mp_x:
+	# 	if i.shape[0] > temp:
+	# 		temp = i.shape[0]
 	for i in range(len(massive_mp_x)):
 		iterc = 0
-		if massive_mp_x[i].shape[0] < 32:
+		if massive_mp_x[i].shape[0] < 30:
 			iterc = temp - massive_mp_x[i].shape[0]
 		tttt = np.zeros([1, FEATURE_NUM])
 		for k in range(iterc):
 			massive_mp_x[i] = np.vstack((massive_mp_x[i],tttt))
 		print(massive_mp_x[i].shape[0])
 		massive_mp_x[i] = massive_mp_x[i].flatten()
+
 	xtest = massive_mp_x[:test_length]
 	ytest = massive_np_y[:test_length]
-	xtrain = massive_mp_x[test_length:]
-	ytrain = massive_np_y[test_length:]
+	xval = massive_mp_x[test_length:test_length + val_length]
+	yval = massive_np_y[test_length:test_length+val_length]
+	xtrain = massive_mp_x[test_length + val_length:]
+	ytrain = massive_np_y[test_length + val_length:]
 	np.save('xtrain.npy',xtrain)
 	np.save('ytrain.npy',ytrain)
-	np.save('xtest',xtest)
-	np.save('ytest',ytest)
+	np.save('xtest.npy',xtest)
+	np.save('ytest.npy',ytest)
+	np.save('xval.npy',xval)
+	np.save('yval.npy',yval)
 
-	return massive_mp_x[test_length:], massive_np_y[test_length:], massive_mp_x[:test_length], massive_np_y[:test_length]
+	# return massive_mp_x[test_length:], massive_np_y[test_length:], massive_mp_x[:test_length], massive_np_y[:test_length]
 
 
 
