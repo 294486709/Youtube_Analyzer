@@ -3,7 +3,7 @@ import numpy as np
 import random
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess
-FEATURE_NUM = 30
+FEATURE_NUM = 300
 
 
 LENGTH_TRAINING = 80
